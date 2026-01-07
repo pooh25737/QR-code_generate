@@ -3,254 +3,421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Your QR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>QR Code Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.15);
-            --text-main: #1e293b;
-            --text-sub: #64748b;
+            --bg-page: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --border-color: #e5e7eb;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Prompt', sans-serif; }
 
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: var(--bg-page);
+            background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+            background-size: 24px 24px;
             min-height: 100vh;
-            /* Animated Background */
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            padding: 20px;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Glassmorphism Card */
-        .container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            width: 100%;
-            max-width: 420px;
-            padding: 3rem 2rem;
-            border-radius: 24px;
-            box-shadow: var(--shadow-soft);
-            text-align: center;
-            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 45px rgba(31, 38, 135, 0.2);
-        }
-
-        /* Typography */
-        .header { margin-bottom: 2.5rem; }
-        .title { 
-            font-size: 2rem; 
-            font-weight: 700; 
-            color: var(--text-main); 
-            letter-spacing: -0.5px;
-            margin-bottom: 0.5rem;
-        }
-        .sub-title { font-size: 0.95rem; color: var(--text-sub); font-weight: 400; }
-
-        /* Input Styling */
-        .input-group { margin-bottom: 1.5rem; text-align: left; position: relative; }
-        label { 
-            font-size: 0.85rem; 
-            color: var(--text-main); 
-            font-weight: 600; 
-            margin-bottom: 0.5rem; 
-            display: block; 
-            margin-left: 5px;
-        }
-        input[type="text"] { 
-            width: 100%; 
-            padding: 16px 20px; 
-            border: 2px solid transparent; 
-            background: #f1f5f9;
-            border-radius: 16px; 
-            font-size: 1rem; 
-            outline: none; 
-            transition: all 0.3s ease;
+            display: flex; justify-content: center; align-items: center; padding: 15px; /* ลด padding รอบนอก */
             color: var(--text-main);
         }
-        input[type="text"]:focus { 
-            background: #fff;
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
-        }
-        input[type="text"]::placeholder { color: #cbd5e1; }
 
-        /* Button Styling */
-        .btn-generate { 
-            width: 100%; 
-            padding: 16px; 
-            border: none; 
-            border-radius: 16px; 
-            background: var(--primary); 
-            color: white; 
-            font-size: 1rem; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
-            letter-spacing: 0.5px;
+        .main-card {
+            background: var(--card-bg);
+            border-radius: 24px; /* ปรับ radius ให้พอดีมือถือ */
+            box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.15);
+            width: 100%; max-width: 1000px;
+            display: flex; flex-direction: column;
+            border: 1px solid white;
+            position: relative;
         }
-        .btn-generate:hover { 
-            background: var(--primary-hover); 
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
-        }
-        .btn-generate:active { transform: scale(0.98); }
 
-        /* QR Area */
-        .qr-wrapper { 
-            margin-top: 2.5rem; 
-            display: none; 
-            flex-direction: column; 
-            align-items: center; 
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        /* --- Desktop Layout (> 850px) --- */
+        @media (min-width: 850px) { 
+            .main-card { flex-direction: row; min-height: 650px; border-radius: 32px; } 
+            .controls-area { border-radius: 32px 0 0 32px; border-right: 1px solid var(--border-color); border-bottom: none; }
+            .preview-area { border-radius: 0 32px 32px 0; }
         }
+
+        /* --- Controls --- */
+        .controls-area {
+            flex: 1.1; padding: 25px; background: #fff; /* ลด padding เริ่มต้น */
+            z-index: 20;
+            border-radius: 24px 24px 0 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        @media (min-width: 600px) { .controls-area { padding: 40px; } }
+
+        h1 { font-weight: 600; font-size: 1.5rem; margin-bottom: 5px; color: var(--text-main); }
+        @media (min-width: 600px) { h1 { font-size: 1.8rem; } }
         
-        .qr-frame {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            margin-bottom: 1.5rem;
+        p.subtitle { font-size: 0.85rem; color: #9ca3af; margin-bottom: 25px; }
+
+        .form-group { margin-bottom: 20px; position: relative; }
+        label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: #374151; }
+
+        input[type="text"] {
+            width: 100%; padding: 14px 18px; border: 2px solid var(--border-color); border-radius: 16px;
+            font-size: 1rem; outline: none; background: #f9fafb; transition: all 0.2s ease;
+        }
+        input[type="text"]:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); }
+
+        /* --- Color Trigger (Button) --- */
+        .color-row { display: flex; gap: 12px; flex-wrap: wrap; } /* Wrap บนจอมือถือเล็กมาก */
+        .color-col { flex: 1; min-width: 140px; } /* ขยายเต็มเมื่อจอเล็ก */
+        
+        .color-trigger {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 15px; border: 2px solid #e5e7eb; border-radius: 16px;
+            cursor: pointer; background: #fff; transition: 0.2s;
+        }
+        .color-trigger:hover { border-color: var(--primary); background: #f9fafb; }
+        
+        .color-preview-dot {
+            width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+        .color-value-text { font-size: 0.85rem; color: #6b7280; font-family: monospace; }
+
+        /* --- Modal (iro.js) Responsive --- */
+        #colorPickerModal {
+            position: fixed; /* เปลี่ยนเป็น fixed เพื่อให้อยู่กลางจอเสมอไม่ว่าจะ scroll ไปไหน */
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 25px; border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 1px solid #fff;
+            z-index: 100;
+            display: none;
+            flex-direction: column; align-items: center;
+            width: 90%; max-width: 320px; /* ไม่ให้กว้างเกินจอมือถือ */
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { opacity: 0; transform: translate(-50%, -40%) scale(0.9); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        
+        .picker-header { font-weight: 600; margin-bottom: 20px; color: #374151; font-size: 1.1rem; }
+        .close-picker {
+            margin-top: 20px; padding: 10px 30px; background: #f3f4f6; border-radius: 50px; border: solid #d1d5db 2px;
+            font-size: 0.9rem; color: #374151; cursor: pointer; transition: 0.2s; font-weight: 600;
+        }
+        .close-picker:hover { background: #e5e7eb; }
+        
+        #modalBackdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2); z-index: 90; display: none;
+            backdrop-filter: blur(2px);
         }
 
-        .qr-code img { display: block; max-width: 100%; }
+        /* --- Custom Dropdown --- */
+        .custom-select { position: relative; width: 100%; cursor: pointer; }
+        .select-selected {
+            background-color: #f9fafb; border: 2px solid var(--border-color); border-radius: 16px;
+            padding: 14px 18px; font-size: 1rem; display: flex; justify-content: space-between; align-items: center;
+        }
+        .select-selected:after { content: "▼"; font-size: 0.8rem; color: #6b7280; }
+        .select-items {
+            position: absolute; background-color: #fff; top: 115%; left: 0; right: 0; z-index: 80;
+            border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #e5e7eb;
+            overflow: hidden; display: none;
+        }
+        .select-items div { padding: 12px 18px; transition: 0.2s; border-bottom: 1px solid #f3f4f6; }
+        .select-items div:hover { background-color: #eef2ff; color: var(--primary); }
+        
+        /* --- Upload & Slider --- */
+        .upload-zone {
+            border: 2px dashed #d1d5db; border-radius: 16px; padding: 15px; text-align: center;
+            cursor: pointer; background: #f9fafb; position: relative; transition: 0.2s;
+        }
+        .upload-zone:hover { border-color: var(--primary); background: #eef2ff; color: var(--primary); }
+        .upload-zone input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
+        .upload-content { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; color: #6b7280; flex-wrap: wrap; }
+        #miniPreview { width: 35px; height: 35px; object-fit: contain; display: none; border-radius: 6px; }
 
-        /* Download Button */
-        .btn-download { 
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none; 
-            color: var(--primary); 
-            background: rgba(99, 102, 241, 0.1);
-            padding: 10px 24px; 
-            border-radius: 50px; 
-            font-size: 0.9rem; 
-            font-weight: 600; 
-            transition: all 0.2s; 
-        }
-        .btn-download:hover { 
-            background: var(--primary); 
-            color: white; 
+        .slider-container { margin-top: 15px; opacity: 0.5; pointer-events: none; transition: 0.3s; }
+        .range-slider { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 5px; background: #e5e7eb; outline: none; }
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--primary); cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 2px solid #fff;
         }
 
-        /* Animations */
-        @keyframes slideUp { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
+        /* --- Preview --- */
+        .preview-area {
+            flex: 1.3; background: linear-gradient(135deg, #f3f4f675 0%, #e5e7eb 100%);
+            border-radius: 0 0 24px 24px; 
+            display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 30px 20px;
         }
-        .error { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; border-color: #ef4444 !important; background: #fef2f2 !important; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+        @media (min-width: 850px) { .preview-area { border-radius: 0 32px 32px 0; padding: 40px; } }
+
+        .qr-card-display {
+            background: white; padding: 25px; border-radius: 24px; 
+            box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; align-items: center; gap: 20px; 
+            transition: transform 0.3s;
+            max-width: 100%; /* ป้องกันการล้นจอ */
+        }
+        .qr-card-display:hover { transform: translateY(-5px); }
+        
+        /* Make Canvas Responsive */
+        #canvas-container canvas { 
+            display: block; border-radius: 12px; 
+            max-width: 100%; /* Responsive Canvas */
+            height: auto !important;
+        }
+
+        .btn-download {
+            width: 100%; padding: 14px 24px; background: var(--primary); color: white; border: none; border-radius: 50px;
+            font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .btn-download:hover { background: #4338ca; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <section class="header">
-            <div class="title">QR Generation</div>
-            <div class="sub-title">Generate sleek, scannable QR codes instantly.</div>
-        </section>
+    <div id="modalBackdrop"></div>
 
-        <section class="input-group">
-            <label for="input_text">Destination URL or Text</label>
-            <input type="text" id="input_text" placeholder="e.g., https://yourwebsite.com" autocomplete="off">
-        </section>
+    <div class="main-card">
+        <div class="controls-area">
+            <h1>QR Code Generator</h1>
+            <p class="subtitle">สร้าง QR Code ฟรีไม่มีโฆษณา</p>
 
-        <button class="btn-generate" id="generateBtn">Create QR Code</button>
-
-        <div class="qr-wrapper" id="qrWrapper">
-            <div class="qr-frame">
-                <div class="qr-code" id="qrcode"></div>
+            <div class="form-group">
+                <label>ข้อความ / เว็บไซต์</label>
+                <input type="text" id="dataInput" value="" placeholder="พิมพ์ข้อความที่นี่...">
             </div>
-            <a href="#" id="downloadLink" class="btn-download">
-                Download PNG
-            </a>
+
+            <div class="form-group">
+                <div class="color-row">
+                    <div class="color-col">
+                        <label>สีจุด QR</label>
+                        <div class="color-trigger" id="triggerDots">
+                            <div class="color-preview-dot" id="viewDots" style="background: #1f2937;"></div>
+                            <span class="color-value-text" id="textDots">#1F2937</span>
+                        </div>
+                    </div>
+                    <div class="color-col">
+                        <label>สีพื้นหลัง</label>
+                        <div class="color-trigger" id="triggerBg">
+                            <div class="color-preview-dot" id="viewBg" style="background: #ffffff; border:1px solid #eee"></div>
+                            <span class="color-value-text" id="textBg">#FFFFFF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>ดีไซน์ (Style)</label>
+                <div class="custom-select" id="customSelect">
+                    <div class="select-selected">Rounded (มน)</div>
+                    <div class="select-items">
+                        <div data-value="rounded">Rounded (มน)</div>
+                        <div data-value="dots">Dots (วงกลม)</div>
+                        <div data-value="classy">Classy (หรูหรา)</div>
+                        <div data-value="square">Square (สี่เหลี่ยม)</div>
+                    </div>
+                </div>
+                <input type="hidden" id="dotsType" value="rounded">
+            </div>
+
+            <div class="form-group">
+                <label>อัปโหลดโลโก้</label>
+                <div class="upload-zone">
+                    <input type="file" id="logoInput" accept="image/*">
+                    <div class="upload-content">
+                        <img id="miniPreview" alt="">
+                        <span id="fileName">คลิกเพื่อเลือกรูป</span>
+                    </div>
+                </div>
+                <div class="slider-container" id="sliderArea">
+                    <label style="font-size: 0.8rem; margin: 10px 0 5px; display:block;">ปรับขนาดโลโก้</label>
+                    <input type="range" min="0.2" max="0.5" step="0.05" value="0.35" class="range-slider" id="logoSizeSlider">
+                </div>
+            </div>
         </div>
+
+        <div class="preview-area">
+            <div class="qr-card-display">
+                <div id="canvas-container"></div>
+                <button class="btn-download" id="downloadBtn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Download PNG
+                </button>
+            </div>
+        </div>
+
+        <div id="colorPickerModal">
+            <div class="picker-header" id="pickerTitle">เลือกสีจุด QR</div>
+            <div id="iroPicker"></div> 
+            <div class="close-picker" id="closePickerBtn">เสร็จสิ้น</div>
+        </div>
+
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    
     <script>
-        const btn = document.getElementById("generateBtn");
-        const input = document.getElementById("input_text");
-        const qrWrapper = document.getElementById("qrWrapper");
-        const qrContainer = document.getElementById("qrcode");
-        const downloadLink = document.getElementById("downloadLink");
+        // --- State ---
+        let currentColorTarget = 'dots'; 
+        let dotsColor = "#1f2937";
+        let bgColor = "#ffffff";
+        let uploadedLogo = null;
 
-        btn.addEventListener('click', () => {
-            const text = input.value.trim();
-            if (text === "") {
-                input.classList.add('error');
-                setTimeout(() => input.classList.remove('error'), 400);
-                return;
-            }
+        // --- Elements ---
+        const dataInput = document.getElementById('dataInput');
+        const triggerDots = document.getElementById('triggerDots');
+        const triggerBg = document.getElementById('triggerBg');
+        const viewDots = document.getElementById('viewDots');
+        const viewBg = document.getElementById('viewBg');
+        const textDots = document.getElementById('textDots');
+        const textBg = document.getElementById('textBg');
+        
+        const modal = document.getElementById('colorPickerModal');
+        const backdrop = document.getElementById('modalBackdrop');
+        const pickerTitle = document.getElementById('pickerTitle');
+        const closePickerBtn = document.getElementById('closePickerBtn');
+        
+        const logoInput = document.getElementById('logoInput');
+        const logoSizeSlider = document.getElementById('logoSizeSlider');
+        const dotsTypeVal = document.getElementById('dotsType');
 
-            // Reset UI for regeneration
-            qrWrapper.style.display = 'none';
-            qrContainer.innerHTML = '';
-            
-            // Small timeout to allow display:none to register (for animation reset)
-            setTimeout(() => {
-                qrWrapper.style.display = 'flex';
-                
-                // 1. Generate QR
-                new QRCode(qrContainer, {
-                    text: text,
-                    width: 200,
-                    height: 200,
-                    colorDark: "#1e293b", // สี QR เข้มแบบมีสไตล์ (Dark Slate)
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-
-                // 2. Add Border & Prepare Download
-                setTimeout(addWhiteBorderAndSetDownload, 100);
-            }, 50);
+        // --- 1. Setup Color Picker (iro.js) ---
+        // ปรับขนาด Wheel ให้พอดีกับ Modal (Responsive)
+        const colorPicker = new iro.ColorPicker("#iroPicker", {
+            width: 200, // ลดขนาดลงเล็กน้อยเพื่อให้ใส่ในมือถือเล็กๆ ได้สบาย
+            color: "#1f2937",
+            layout: [
+                { component: iro.ui.Wheel, options: {} },
+                { component: iro.ui.Slider, options: { sliderType: 'value' } }
+            ]
         });
 
-        function addWhiteBorderAndSetDownload() {
-            const qrImage = qrContainer.querySelector("img");
-            if (qrImage && qrImage.src) {
-                const canvas = document.createElement("canvas");
-                const ctx = canvas.getContext("2d");
-                const padding = 25; // เพิ่มขอบให้หนาขึ้นอีกนิดเพื่อความสวยงาม
-
-                canvas.width = qrImage.width + (padding * 2);
-                canvas.height = qrImage.height + (padding * 2);
-
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(qrImage, padding, padding);
-
-                const finalImageURL = canvas.toDataURL("image/png");
-                downloadLink.href = finalImageURL;
-                downloadLink.download = `qr_studio_${Date.now()}.png`; // ชื่อไฟล์แบบมี Timestamp
+        colorPicker.on('color:change', function(color) {
+            if (currentColorTarget === 'dots') {
+                dotsColor = color.hexString;
+                viewDots.style.background = dotsColor;
+                textDots.textContent = dotsColor.toUpperCase();
+            } else {
+                bgColor = color.hexString;
+                viewBg.style.background = bgColor;
+                textBg.textContent = bgColor.toUpperCase();
             }
+            updateQR();
+        });
+
+        // --- Modal Logic ---
+        function openPicker(target) {
+            currentColorTarget = target;
+            pickerTitle.textContent = target === 'dots' ? 'เลือกสีจุด QR' : 'เลือกสีพื้นหลัง';
+            colorPicker.color.hexString = target === 'dots' ? dotsColor : bgColor;
+            
+            modal.style.display = 'flex';
+            backdrop.style.display = 'block';
         }
 
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') btn.click();
+        function closePicker() {
+            modal.style.display = 'none';
+            backdrop.style.display = 'none';
+        }
+
+        triggerDots.addEventListener('click', () => openPicker('dots'));
+        triggerBg.addEventListener('click', () => openPicker('bg'));
+        closePickerBtn.addEventListener('click', closePicker);
+        backdrop.addEventListener('click', closePicker);
+
+        // --- 2. QR Logic ---
+        const qrCode = new QRCodeStyling({
+            width: 260, height: 260, type: "svg",
+            data: "สวัสดีครับ",
+            image: "",
+            dotsOptions: { color: dotsColor, type: "rounded" },
+            backgroundOptions: { color: bgColor },
+            imageOptions: { crossOrigin: "anonymous", margin: 5, imageSize: 0.35, hideBackgroundDots: true },
+            cornersSquareOptions: { type: "extra-rounded", color: dotsColor },
+            cornersDotOptions: { type: "dot", color: dotsColor }
         });
+
+        qrCode.append(document.getElementById("canvas-container"));
+
+        function updateQR() {
+            let safeData = dataInput.value;
+            try { safeData = unescape(encodeURIComponent(dataInput.value)); } catch(e) {}
+
+            const currentStyle = dotsTypeVal.value;
+            const options = {
+                data: safeData,
+                dotsOptions: { color: dotsColor, type: currentStyle },
+                backgroundOptions: { color: bgColor },
+                cornersSquareOptions: { 
+                    color: dotsColor, 
+                    type: currentStyle === 'square' ? 'square' : 'extra-rounded' 
+                },
+                cornersDotOptions: { color: dotsColor },
+                imageOptions: { 
+                    imageSize: parseFloat(logoSizeSlider.value), 
+                    hideBackgroundDots: true 
+                }
+            };
+
+            if (uploadedLogo) options.image = uploadedLogo;
+            qrCode.update(options);
+        }
+
+        // --- Event Listeners ---
+        dataInput.addEventListener('keyup', updateQR);
+        logoSizeSlider.addEventListener('input', updateQR);
+
+        // Upload
+        logoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = file.name.substring(0, 15) + '...';
+                const reader = new FileReader();
+                reader.onload = () => {
+                    uploadedLogo = reader.result;
+                    document.getElementById('miniPreview').src = uploadedLogo;
+                    document.getElementById('miniPreview').style.display = 'block';
+                    document.getElementById('sliderArea').style.opacity = '1';
+                    document.getElementById('sliderArea').style.pointerEvents = 'auto';
+                    updateQR();
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Dropdown
+        const customSelect = document.getElementById('customSelect');
+        const selectSelected = customSelect.querySelector('.select-selected');
+        const selectItems = customSelect.querySelector('.select-items');
+        const items = selectItems.querySelectorAll('div');
+
+        selectSelected.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectItems.style.display = selectItems.style.display === 'block' ? 'none' : 'block';
+        });
+
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                selectSelected.textContent = item.textContent;
+                dotsTypeVal.value = item.getAttribute('data-value');
+                selectItems.style.display = 'none';
+                updateQR();
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!customSelect.contains(e.target)) selectItems.style.display = 'none';
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            qrCode.download({ name: "my-thai-qr", extension: "png" });
+        });
+
     </script>
 </body>
 </html>
